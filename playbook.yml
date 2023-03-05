@@ -52,3 +52,7 @@
       owner: www-data
       group: www-data
       mode: "u=rwX,g=rwX,o=rX"
+  - name: Lancer le service Docker Compose
+  command: docker-compose up -d
+  args:
+    chdir: /var/lib/jenkins/workspace/DevOps/docker-compose.yml
