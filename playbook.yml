@@ -55,4 +55,4 @@
   - name: Lancer le service Docker Compose
     command: docker-compose up -d
     args:
-      chdir: /var/lib/jenkins/workspace/DevOps/docker-compose.yml
+      chdir: /var/lib/jenkins/workspace/DevOps/
