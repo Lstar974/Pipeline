@@ -4,7 +4,7 @@ node {
     }
     
     stage('Build image') {
-       dockerImage = docker.build("lstar974/wordpress")
+       dockerImage = docker.build("lstar974/pipeline")
     }
     
     stage('Push image') {
