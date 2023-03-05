@@ -1,3 +1,4 @@
+---
 - name: Build WordPress environment
   hosts: all
   become: yes
@@ -51,25 +52,28 @@
       owner: www-data
       group: www-data
       mode: "u=rwX,g=rwX,o=rX"
-  - name: Lancer le service Docker Compose
+  - name: Install Docker
+    apt:
+      name: docker.io
+      state: present
+  - name: Install Docker Compose
+    shell: |
+      curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      chmod +x /usr/local/bin/docker-compose
+  - name: Create Dockerfile for WordPress
+    copy:
+      src: Dockerfile-wordpress
+      dest: /var/lib/docker/wordpress/Dockerfile
+  - name: Create Dockerfile for Redis
+    copy:
+      src: Dockerfile-redis
+      dest: /var/lib/docker/redis/Dockerfile
+  - name: Configure docker-compose.yml
+    copy:
+      src: docker-compose.yml
+      dest: /var/lib/docker/docker-compose.yml
+  - name: Start WordPress and Redis containers
     command: docker-compose up -d
     args:
-      chdir: /var/lib/jenkins/workspace/DevOps/
-  - name: Wait for WordPress to start
-    uri:
-      url: http://192.168.6.10:5000
-      method: GET
-      return_content: yes
-    register: result
-    until: result.status == 200
-    retries: 10
-    delay: 5
-  - name: Create WordPress admin user
-    uri:
-      url: http://192.168.6.10:5000/wp-admin/install.php?step=2
-      method: POST
-      body: "weblog_title={{ wordpress_site_url }}&user_name={{ wordpress_admin_user }}&admin_password={{ wordpress_admin_password }}&admin_password2={{ wordpress_admin_password }}&admin_email={{ wordpress_admin_email }}&blog_public=0"
-    register: result
-    until: result.status == 200
-    retries: 10
-    delay: 5
+      chdir: /var/lib/docker/
+
