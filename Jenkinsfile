@@ -14,7 +14,7 @@ node {
     }
 
     stage('Ansible') {
-        ansiblePlaybook credentialsId: 'ssh', disableHostKeyChecking: true, inventory: 'hosts.yml', playbook: 'playbook.yml', compose: 'docker-compose.yml'
+        ansiblePlaybook credentialsId: 'ssh', disableHostKeyChecking: true, inventory: 'hosts.yml', playbook: 'playbook.yml'
         withDockerRegistry(credentialsId: '2d03ed10-ad94-4ea2-98c5-5ad4fe9eea5b') {
         }
     }
