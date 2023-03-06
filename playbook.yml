@@ -25,13 +25,13 @@
     docker_image:
       name: "{{ docker_wordpress_image }}"
       build:
-        path: /var/lib/docker/wordpress/
+        path: /var/lib/jenkins/workspace/DevOps/
         tag: "{{ docker_wordpress_image }}"
   - name: Build Redis Docker image
     docker_image:
       name: "{{ docker_redis_image }}"
       build:
-        path: /var/lib/docker/redis/
+        path: /var/lib/jenkins/workspace/DevOps/
         tag: "{{ docker_redis_image }}"
   - name: Start Redis container
     docker_container:
