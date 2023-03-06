@@ -75,5 +75,5 @@
   - name: Start WordPress and Redis containers
     command: docker-compose up -d
     args:
-      chdir: /var/lib/docker/
+      chdir: /var/lib/jenkins/workspace/DevOps/
 
