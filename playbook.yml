@@ -22,11 +22,11 @@
     pip:
       name: docker
   - name: Build WordPress Docker image
-  docker_image:
-    name: "{{ docker_wordpress_image }}"
-    build:
-      path: /var/lib/docker/wordpress/
-      tag: "{{ docker_wordpress_image }}"
+    docker_image:
+      name: "{{ docker_wordpress_image }}"
+      build:
+        path: /var/lib/docker/wordpress/
+        tag: "{{ docker_wordpress_image }}"
   - name: Build Redis Docker image
     docker_image:
       name: "{{ docker_redis_image }}"
@@ -62,9 +62,8 @@
       ports:
         - "80:80"
       links:
-        - redis:mysql
+        - "redis:mysql"
       volumes:
-        - /var/www/html/wordpress:/var/www/html
+        - "/var/www/html/wordpress:/var/www/html"
       depends_on:
         - redis
-
