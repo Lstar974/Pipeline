@@ -22,12 +22,14 @@
     pip:
       name: docker
   - name: Build WordPress Docker image
-    docker_image:
-      build:
-        path: /var/lib/docker/wordpress/
-        tag: "{{ docker_wordpress_image }}"
+  docker_image:
+    name: "{{ docker_wordpress_image }}"
+    build:
+      path: /var/lib/docker/wordpress/
+      tag: "{{ docker_wordpress_image }}"
   - name: Build Redis Docker image
     docker_image:
+      name: "{{ docker_redis_image }}"
       build:
         path: /var/lib/docker/redis/
         tag: "{{ docker_redis_image }}"
