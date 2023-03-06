@@ -11,7 +11,7 @@
     wordpress_admin_user: lucas
     wordpress_admin_password: root
     wordpress_admin_email: admin@example.com
-    docker_wordpress_image: wordpress:{{ wordpress_version }}
+    docker_wordpress_image: wordpress:latest
     docker_redis_image: redis:latest
   tasks:
   - name: Install Docker
