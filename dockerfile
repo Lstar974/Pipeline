@@ -27,6 +27,14 @@ RUN docker-php-ext-install \
         pdo_mysql \
         zip
 
+# Install additional PHP extensions for Wordpress
+RUN docker-php-ext-install bcmath sockets
+
+# Install required PHP extensions for Wordpress
+RUN apt-get install -y libmemcached-dev \
+    && pecl install memcached-3.1.5 \
+    && docker-php-ext-enable memcached
+
 # Enable mod_rewrite
 RUN a2enmod rewrite
 
