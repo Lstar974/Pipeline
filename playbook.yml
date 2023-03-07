@@ -1,58 +1,92 @@
 ---
-- name: Build WordPress environment
-  hosts: all
+- hosts: webservers
   become: yes
   vars:
-    wordpress_version: 5.6
-    wordpress_db_name: wordpress
-    wordpress_db_user: lucas
-    wordpress_db_password: root
-    wordpress_site_url: test.com
-    wordpress_admin_user: lucas
-    wordpress_admin_password: root
-    wordpress_admin_email: admin@example.com
+    db_name: wordpress
+    db_user: lucas
+    db_password: root
+    wp_url: mywordpress.com
+    wp_title: My WordPress Site
+    wp_user: luc
+    wp_password: 1234
   tasks:
-  - name: Install LAMP stack
-    package:
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install packages
+    apt:
       name: "{{ item }}"
       state: present
-    with_items:
-       - apache2
-       - php
-       - libapache2-mod-php
-       - php-mysql
-  - name: Create WordPress database
-    mysql_db:
-      name: "{{ wordpress_db_name }}"
-      login_host: 192.168.6.10
-      login_user: "{{ wordpress_db_user }}"
-      login_password: "{{ wordpress_db_password }}"
-      login_unix_socket: /var/run/mysqld/mysqld.sock
+    loop:
+      - apache2
+      - php
+      - libapache2-mod-php
+      - mysql-server
+      - php-mysql
+      - php-curl
+      - php-gd
+      - php-mbstring
+      - php-xml
+      - php-xmlrpc
+      - zip
+      - unzip
+
+  - name: Enable Apache modules
+    apache2_module:
+      name: "{{ item }}"
       state: present
-  - name: Download WordPress
-    get_url:
-      url: https://wordpress.org/wordpress-{{ wordpress_version }}.tar.gz
-      dest: /tmp
-  - name: Extract WordPress
+    loop:
+      - rewrite
+      - headers
+
+  - name: Create MySQL database
+    mysql_db:
+      name: "{{ db_name }}"
+      state: present
+      login_user: root
+      login_password: root
+      encoding: utf8
+
+  - name: Create MySQL user
+    mysql_user:
+      name: "{{ db_user }}"
+      password: "{{ db_password }}"
+      priv: "{{ db_name }}.*:ALL"
+      login_user: root
+      login_password: root
+
+  - name: Download and extract WordPress
     unarchive:
-      src: /tmp/wordpress-{{ wordpress_version }}.tar.gz
-      dest: /var/www/html/
+      src: https://wordpress.org/latest.tar.gz
+      dest: /var/www/html
       remote_src: yes
-  - name: Configure WordPress
-    template:
-      src: wp-config.php
-      dest: /var/www/html/wordpress/wp-config.php
-    vars:
-      db_name: "{{ wordpress_db_name }}"
-      db_user: "{{ wordpress_db_user }}"
-      db_password: "{{ wordpress_db_password }}"
-  - name: Set ownership and permissions
-    file:
-      path: /var/www/html/wordpress
       owner: www-data
       group: www-data
-      mode: "u=rwX,g=rwX,o=rX"
-  - name: Lancer le service Docker Compose
-    command: docker-compose up -d
-    args:
-      chdir: /var/lib/jenkins/workspace/DevOps/
+
+  - name: Configure WordPress
+    template:
+      src: wp-config.php.j2
+      dest: /var/www/html/wordpress/wp-config.php
+      owner: www-data
+      group: www-data
+      mode: '0644'
+
+  - name: Set file permissions
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: '0755'
+      recurse: yes
+    loop:
+      - /var/www/html/wordpress/wp-content/uploads
+      - /var/www/html/wordpress/wp-content/plugins
+      - /var/www/html/wordpress/wp-content/themes
+
+  - name: Restart Apache
+    service:
+      name: apache2
+      state: restarted
+
