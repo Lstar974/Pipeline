@@ -19,6 +19,6 @@ node {
         }
     }
     stage('Run container') {
-    docker.image('lstar974/pipeline').run('-p 5050:50')
+    docker.image('lstar974/pipeline').run('--rm -p 5050:80')
     }
 }
