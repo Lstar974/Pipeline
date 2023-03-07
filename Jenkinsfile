@@ -18,4 +18,7 @@ node {
         withDockerRegistry(credentialsId: '2d03ed10-ad94-4ea2-98c5-5ad4fe9eea5b') {
         }
     }
+    stage('Run container') {
+    docker.image('lstar974/pipeline').run('-p 8080:80')
+    }
 }
