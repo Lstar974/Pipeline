@@ -39,13 +39,13 @@ RUN apt-get install -y libmemcached-dev \
 RUN a2enmod rewrite
 
 # Copy the code to the container
-COPY . /var/www/html/
+COPY . /var/www/html/wordpress
 
 # Set the working directory
-WORKDIR /var/www/html/
+WORKDIR /var/www/html/wordpress
 
 # Change the ownership of the files
-RUN chown -R www-data:www-data /var/www/html/
+RUN chown -R www-data:www-data /var/www/html/wordpress
 
 # Install WP-CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
